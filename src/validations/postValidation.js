@@ -4,7 +4,7 @@ import ApiError from '~/utils/ApiError'
 
 const getPost = async (req, res, next) => {
   const getPostCondition = Joi.object({
-    page: Joi.number().min(1).required(),
+    page: Joi.number().min(1).optional(),
     perPage: Joi.number().min(1).optional(),
     title: Joi.string().optional()
   })

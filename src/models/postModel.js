@@ -4,59 +4,50 @@ const POST_COLLECTION_NAME = 'posts'
 
 const getPostPagination = async (query) => {
   const perPage = parseInt(query.perPage) || 10
-  const page = parseInt(query.page)
-  const postsCollection = GET_DB().collection(POST_COLLECTION_NAME)
-  const totalPosts = await postsCollection.countDocuments()
+  const page = parseInt(query.page) || 1
 
-  const matchStage = {}
+  const match = {}
   if (query.title) {
-    matchStage.$match = { title: { $regex: query.title, $options: 'i' } }
+    match.title = { $regex: query.title, $options: 'i' }
   }
 
-  const lookupUser = {
-    $lookup: {
-      from: 'users',
-      localField: 'owner',
-      foreignField: 'id',
-      as: 'userData'
-    }
-  }
+  const postsCollection = GET_DB().collection(POST_COLLECTION_NAME)
 
-  const projectStage = {
-    $project: {
-      _id: 1,
-      title: 1,
-      content: 1,
-      owner: 1,
-      created_at: 1,
-      tags: 1,
-      user: {
-        $arrayElemAt: [
-          {
-            $map: {
-              input: '$userData',
-              in: {
-                _id: '$$this._id',
-                name: '$$this.name'
-              }
-            }
-          },
-          0
-        ]
-      }
-    }
-  }
+  const totalPosts = await postsCollection.countDocuments(match)
 
   const pipeline = [
-    matchStage,
-    lookupUser,
-    projectStage,
+    { $match: match },
     {
-      $skip: (page - 1) * perPage
+      $lookup: {
+        from: 'users',
+        localField: 'owner',
+        foreignField: 'id',
+        as: 'userInfo'
+      }
     },
     {
-      $limit: perPage
-    }
+      $project: {
+        _id: 1,
+        title: 1,
+        content: 1,
+        owner: 1,
+        created_at: 1,
+        tags: 1,
+        userInfo: {
+          $arrayElemAt: [
+            {
+              $map: {
+                input: '$userInfo',
+                in: { _id: '$$this._id', name: '$$this.name' }
+              }
+            },
+            0
+          ]
+        }
+      }
+    },
+    { $skip: (page - 1) * perPage },
+    { $limit: perPage }
   ]
 
   const posts = await postsCollection.aggregate(pipeline).toArray()
@@ -66,6 +57,7 @@ const getPostPagination = async (query) => {
     totalPosts: totalPosts
   }
 }
+
 
 export const postModel = {
   getPostPagination

@@ -4,7 +4,7 @@ import { postService } from '~/services/postService'
 
 const getPost = async (req, res, next) => {
   try {
-    const result = await postService.getPost(req.query);
+    const result = await postService.getPost(req.query)
     res.status(StatusCodes.OK).json({
       statusCode: StatusCodes.OK,
       data: result.posts || [],
