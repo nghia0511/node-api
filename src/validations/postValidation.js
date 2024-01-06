@@ -16,6 +16,20 @@ const getPost = async (req, res, next) => {
   }
 }
 
+const getCommentByPostID = async (req, res, next) => {
+  const getCommentByPostIDCondition = Joi.object({
+    page: Joi.number().min(1).optional(),
+    perPage: Joi.number().min(1).optional()
+  })
+  try {
+    await getCommentByPostIDCondition.validateAsync(req.query, { abortEarly: false })
+    next()
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
+  }
+}
+
 export const postValidation = {
-  getPost
+  getPost,
+  getCommentByPostID
 }

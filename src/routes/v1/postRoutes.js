@@ -1,17 +1,16 @@
 import express from 'express'
-import { StatusCodes } from 'http-status-codes'
 import { postValidation } from '~/validations/postValidation'
 import { postController } from '~/controllers/postController'
 
 const Router = express.Router()
 
-Router.get('/status', (req, res) => {
-  res.status(StatusCodes.OK).json({
-    status: 'ok'
-  })
-})
-
 Router.route('/')
   .get(postValidation.getPost, postController.getPost)
+
+Router.route('/:id/comments')
+  .get(postValidation.getCommentByPostID, postController.getCommentByPostID)
+
+Router.route('/:id')
+  .get(postController.getPostDetail)
 
 export const RouterPost = Router
