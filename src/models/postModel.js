@@ -110,7 +110,7 @@ const getPostDetail = async (id) => {
   ]
 
   const post = await GET_DB().collection(POST_COLLECTION_NAME).aggregate(pipeline).toArray()
-  return post[0] || null;
+  return post[0] || null
 }
 
 export const postModel = {
