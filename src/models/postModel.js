@@ -70,6 +70,7 @@ const getPostPagination = async (query) => {
         numberOfComments: 1
       }
     },
+    { $sort: { created_at: -1 } },
     { $skip: (page - 1) * perPage },
     { $limit: perPage }
   ]

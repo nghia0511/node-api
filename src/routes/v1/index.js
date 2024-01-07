@@ -10,6 +10,6 @@ Router.get('/status', (req, res) => {
   })
 })
 
-Router.use('/post', RouterPost)
+Router.use('/posts', RouterPost)
 
 export const API_V1 = Router

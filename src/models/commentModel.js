@@ -13,7 +13,6 @@ const COMMENT_COLLECTION_SCHEMA = Joi.object({
 })
 
 
-
 const getCommentPaginationByPostID = async (fillter) => {
   const perPage = parseInt(fillter.query.perPage) || 10
   const page = parseInt(fillter.query.page) || 1
@@ -38,6 +37,7 @@ const getCommentPaginationByPostID = async (fillter) => {
         _id: 1,
         content: 1,
         created_at: 1,
+        post: 1,
         userInfo: {
           $arrayElemAt: [
             {
@@ -51,6 +51,7 @@ const getCommentPaginationByPostID = async (fillter) => {
         }
       }
     },
+    { $sort: { created_at: -1 } },
     { $skip: (page - 1) * perPage },
     { $limit: perPage }
   ]
