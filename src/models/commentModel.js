@@ -1,7 +1,18 @@
 import { GET_DB } from '~/config/mongodb'
 import { ObjectId} from 'mongodb'
+import Joi from 'joi'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 
 const COMMENT_COLLECTION_NAME = 'comments'
+
+const COMMENT_COLLECTION_SCHEMA = Joi.object({
+  content: Joi.string().required().max(1000).min(1),
+  post: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+  owner: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+  created_at: Joi.number().required().default(Date.now())
+})
+
+
 
 const getCommentPaginationByPostID = async (fillter) => {
   const perPage = parseInt(fillter.query.perPage) || 10

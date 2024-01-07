@@ -1,7 +1,16 @@
 import { GET_DB } from '~/config/mongodb'
 import { ObjectId } from 'mongodb'
+import Joi from 'joi'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 
 const POST_COLLECTION_NAME = 'posts'
+const POST_COLLECTION_SCHEMA = Joi.object({
+  title: Joi.string().required().max(255).min(1),
+  content: Joi.string().required().max(1000).min(1),
+  owner: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+  created_at: Joi.number().required().default(Date.now()),
+  tags: Joi.array().items(Joi.string().max(255).min(1))
+})
 
 const getPostPagination = async (query) => {
   const perPage = parseInt(query.perPage) || 10
